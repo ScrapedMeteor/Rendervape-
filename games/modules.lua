@@ -444,3 +444,165 @@ run(function()
         end
     })
 end)
+		
+runfunction(function()
+	local transformed = false
+	local GameThemeV2 = {["Enabled"] = false}
+	local themeselected = {["Value"] = "CitySky"}
+
+	local Lighting = game:GetService("Lighting")
+	local StarterGui = game:GetService("StarterGui")
+
+	local skyboxes = {
+		NebulaSky = {
+			Back = "rbxassetid://13581437029",
+			Down = "rbxassetid://13581439832",
+			Front = "rbxassetid://13581447312",
+			Left = "rbxassetid://13581443463",
+			Right = "rbxassetid://13581452875",
+			Up = "rbxassetid://13581450222",
+			AtmosphereColor = Color3.fromRGB(179, 59, 249),
+			AtmosphereDecay = Color3.fromRGB(155, 212, 255)
+		},
+		PinkMountainSky = {
+			Back = "http://www.roblox.com/asset/?id=160188495",
+			Down = "http://www.roblox.com/asset/?id=160188614",
+			Front = "http://www.roblox.com/asset/?id=160188609",
+			Left = "http://www.roblox.com/asset/?id=160188589",
+			Right = "http://www.roblox.com/asset/?id=160188597",
+			Up = "http://www.roblox.com/asset/?id=160188588"
+		},
+		CitySky = {
+			Back = "rbxassetid://11263062161",
+			Down = "rbxassetid://11263065295",
+			Front = "rbxassetid://11263066644",
+			Left = "rbxassetid://11263068413",
+			Right = "rbxassetid://11263069782",
+			Up = "rbxassetid://11263070890"
+		},
+		PinkSky = {
+			Back = "http://www.roblox.com/asset/?id=271042516",
+			Down = "http://www.roblox.com/asset/?id=271077243",
+			Front = "http://www.roblox.com/asset/?id=271042556",
+			Left = "http://www.roblox.com/asset/?id=271042310",
+			Right = "http://www.roblox.com/asset/?id=271042467",
+			Up = "http://www.roblox.com/asset/?id=271077958"
+		},
+		SpaceSky = {
+			Back = "rbxassetid://1735468027",
+			Down = "rbxassetid://1735500192",
+			Front = "rbxassetid://1735467260",
+			Left = "rbxassetid://1735467682",
+			Right = "rbxassetid://1735466772",
+			Up = "rbxassetid://1735500898"
+		},
+		EgirlSky = {
+			Back = "rbxassetid://2128458653",
+			Down = "rbxassetid://2128462480",
+			Front = "rbxassetid://2128458653",
+			Left = "rbxassetid://2128462027",
+			Right = "rbxassetid://2128462027",
+			Up = "rbxassetid://2128462236"
+		},
+		Infinite = {
+			Back = "rbxassetid://14358449723",
+			Down = "rbxassetid://14358455642",
+			Front = "rbxassetid://14358452362",
+			Left = "rbxassetid://14358784700",
+			Right = "rbxassetid://14358454172",
+			Up = "rbxassetid://14358455112"
+		}
+	}
+
+	local function clearLighting()
+		for _, v in pairs(Lighting:GetChildren()) do
+			if v:IsA("Sky") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") or v:IsA("Atmosphere") then
+				v:Destroy()
+			end
+		end
+	end
+
+	local function applygametheme(themeseletced)
+		local theme = skyboxes[themeseletced]
+		if not theme then return end
+
+		clearLighting()
+
+		local sky = Instance.new("Sky", Lighting)
+		sky.SkyboxBk = theme.Back
+		sky.SkyboxDn = theme.Down
+		sky.SkyboxFt = theme.Front
+		sky.SkyboxLf = theme.Left
+		sky.SkyboxRt = theme.Right
+		sky.SkyboxUp = theme.Up
+
+		if themeselected == "NebulaSky" then
+			local cc = Instance.new("ColorCorrectionEffect", Lighting)
+			cc.Brightness = 0.1
+			cc.Contrast = 0.5
+			cc.Saturation = -0.3
+			cc.TintColor = Color3.fromRGB(255, 235, 203)
+
+			local rays = Instance.new("SunRaysEffect", Lighting)
+			rays.Intensity = 0.075
+			rays.Spread = 0.727
+
+			local atm = Instance.new("Atmosphere", Lighting)
+			atm.Density = 0.364
+			atm.Offset = 0.556
+			atm.Color = theme.AtmosphereColor
+			atm.Decay = theme.AtmosphereDecay
+			atm.Glare = 0.36
+			atm.Haze = 1.72
+
+			Lighting.Brightness = 0.3
+			Lighting.Ambient = Color3.fromRGB(2, 2, 2)
+			Lighting.GlobalShadows = true
+			Lighting.ClockTime = 15
+			Lighting.ShadowSoftness = 0.2
+			Lighting.ExposureCompensation = 0.5
+		end
+
+		if themeselected == "EgirlSky" then
+			local atm = Lighting:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere", Lighting)
+			atm.Color = Color3.fromRGB(255, 214, 172)
+			atm.Decay = Color3.fromRGB(255, 202, 175)
+
+			if sky then
+				sky.MoonTextureId = "rbxassetid://8139665943"
+				sky.MoonAngularSize = 11
+				sky.SunAngularSize = 4
+			end
+		end
+	end
+
+	GameThemeV2 = vape.Categories.World:CreateModule({
+		["Name"] = "GameThemesV2",
+		["Function"] = function(callback)
+			if callback then
+				if not transformed then
+					transformed = true
+					applyTheme(themeselected["Value"])
+				else
+					GameThemeV2["ToggleButton"](false)
+				end
+			else
+				notify("GameThemeV2", "Disabled Next Game", 10)
+			end
+		end,
+		["ExtraText"] = function()
+			return themeselector["Value"]
+		end
+	})
+
+	themeselector = GameThemeV2.CreateDropdown({
+		["Name"] = "Theme",
+		["Function"] = function() end,
+		["List"] = {
+			"NebulaSky", "PinkMountainSky",
+			"CitySky", "PinkSky",
+			"EgirlSky", "SpaceSky",
+			"Infinite"
+		}
+	})
+end)
