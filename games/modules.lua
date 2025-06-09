@@ -415,7 +415,6 @@ local function activateNightmareEmote()
     end
 end
 
-if game.PlaceId = 6872274481 then
 run(function()
     InfJump = vape.Categories.Blatant:CreateModule({
         Name = "InfiniteJump",
